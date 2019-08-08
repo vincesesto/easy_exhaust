@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block content %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    var exit = $("#exit-notification");
+    var notification = $("#notification");
+exit.on("click", function(){
+      notification.remove()
+    })
+  })
+</script>
+<form action="/api/post-blog" method="POST" id="blog-form">
+  <div class="row">
+    <div class="col-12" id="blog-form-container">
+      {% if notification %}
+        <p id="notification" style="background: {{ notification_color }}; border: 2px solid {{ notification_border }};">
+          {{ notification }}
+          <i id="exit-notification" class="fas fa-times"></i>
+        </p>
+      {% endif %}
+      <div class="form-group">
+        <label>
+            Title
+            <input type="text" name="title" value="">
+          </label>
+      </div>
+      <div class="form-group">
+        <label>
+            Content
+            <textarea name="content" rows="15"></textarea>
+        </label>
+      </div>
+      <button class="btn btn-success text-center" type="submit" name="button">
+            PUBLISH
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}

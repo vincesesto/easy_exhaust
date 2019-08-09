@@ -20,6 +20,21 @@ def render(tpl_path, context):
     path, filename = os.path.split(tpl_path)
     return jinja2.Environment(loader=jinja2.FileSystemLoader(path or "./")).get_template(filename).render(context)
 
+@app.route('/athletes', methods=['GET'])
+def get_athletes():
+    return get_athlete_db().list_athletes()
+
+@app.route('/athletes', methods=['POST'])
+def add_new_athlete():
+    body = app.current_request.json_body
+    return get_athlete_db().add_athlete(
+        athlete=body['strava_id'],
+        strava_token=body['strava_token'],
+        activity_bearer=body['activity_bearer'],
+        steemit_user=body['steemit_user'],
+        metadata=body.get('metadata'),
+    )
+
 @app.route('/')
 def index():
     welcome_page = {
@@ -48,15 +63,8 @@ def sign_up():
 
 @app.route('/strava_auth')
 def strava_auth():           
-    # Redirect to strava auth with steem_name
-    # capture details 
-   
-    resp = app.current_request.to_dict()
-    body = app.current_request.json_body
-    # Add it into the database for tokens
-    steem_name=resp['query_params']['steem_name']
-    
-    strava_auth_url="http://www.strava.com/oauth/authorize?client_id=31940&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=profile:write,activity:write,activity:read_all&steem_name={}".format(steem_name)
+    # Redirect to strava auth 
+    strava_auth_url="http://www.strava.com/oauth/authorize?client_id=31940&response_type=code&redirect_uri=http://127.0.0.1:8000/exchange_token&approval_prompt=force&scope=profile:write,activity:write,activity:read_all"
 
     # Now return a response and redirect to new page
     context = {'strava_auth_url': strava_auth_url}
@@ -72,11 +80,27 @@ def strava_auth():
 #http://localhost/exchange_token?state=&code=c4e6eb4d70a1ff0845ff64661e6948e29c8f1003&scope=read,activity:write,profile:write
 
 # Use something like this to get all the details from the retured url
-#@app.route('/exchange_token')
-#def exchange():
-#    # return dictionary of results
-#    resp = app.current_request.to_dict()
-#    body = app.current_request.json_body
-#    # Add it into the database for tokens
-#    get_app_db().add_item(token=resp['query_params']['code'])
+@app.route('/exchange_token')
+def exchange():
+    # return dictionary of results
+    resp = app.current_request.to_dict()
+    token=resp['query_params']['code']
+    
+    context = {'strava_token': token}
+
+    template = render("chalicelib/templates/sign_up.html", context)
+    return Response(template, status_code=200, headers={
+        "Content-Type": "text/html",
+        "Access-Control-Allow-Origin": "*"
+    })
+
+
+#    return get_athlete_db().add_athlete(
+#        athlete=body['strava_id'],
+#        strava_token=body['strava_token'],
+#        activity_bearer=body['activity_bearer'],
+#        steemit_user=body['steemit_user'],
+#        metadata=body.get('metadata'),
+
+
 

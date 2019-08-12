@@ -21,7 +21,7 @@ class InMemoryAthleteDB(object):
         all_athletess.extend(self.list_athletes())
         return all_athletes
 
-    def add_athlete(self, athlete, strava_token, activity_bearer, steemit_user=None, metadata=None, username=DEFAULT_USERNAME):
+    def add_athlete(self, athlete, strava_token, activity_bearer, steemit_user=None, steemit_token=None, metadata=None, username=DEFAULT_USERNAME):
         if username not in self._state:
             self._state[username] = {}
         self._state[username][athlete] = {
@@ -29,6 +29,7 @@ class InMemoryAthleteDB(object):
             'strava_token': strava_token,
             'activity_bearer': activity_bearer,
             'steemit_user': steemit_user,
+            'steemit_token': steemit_token,
             'metadata': metadata if metadata is not None else {},
             'username': username
         }

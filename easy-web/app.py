@@ -32,6 +32,7 @@ def add_new_athlete():
         strava_token=body['strava_token'],
         activity_bearer=body['activity_bearer'],
         steemit_user=body['steemit_user'],
+        steemit_token=body['steemit_token'],
         metadata=body.get('metadata'),
     )
 
@@ -53,7 +54,9 @@ def index():
 
 @app.route('/signup')
 def sign_up():
-    context = {"signup_page": "test"}
+    resp = app.current_request.to_dict()
+    signup_token=resp['query_params']['code']
+    context = {'signup_token': signup_token}
 
     template = render("chalicelib/templates/sign_up.html", context)
     return Response(template, status_code=200, headers={
@@ -85,22 +88,27 @@ def exchange():
     # return dictionary of results
     resp = app.current_request.to_dict()
     token=resp['query_params']['code']
-    
-    context = {'strava_token': token}
+    easy_auth_url="http://127.0.0.1:8000/signup?code={}".format(token)
 
-    template = render("chalicelib/templates/sign_up.html", context)
+    context = {'strava_auth_url': easy_auth_url}
+
+    template = render("chalicelib/templates/strava_auth_redirect.html", context)
     return Response(template, status_code=200, headers={
         "Content-Type": "text/html",
         "Access-Control-Allow-Origin": "*"
     })
 
+@app.route('/all_finished')
+def all_finished():
+    resp = app.current_request.to_dict()
+    strava_token=resp['query_params']['strava_token']
+    steem_name=resp['query_params']['steem_name']
+    
+    context = {'strava_token': strava_token,
+               'steem_name': steem_name }
 
-#    return get_athlete_db().add_athlete(
-#        athlete=body['strava_id'],
-#        strava_token=body['strava_token'],
-#        activity_bearer=body['activity_bearer'],
-#        steemit_user=body['steemit_user'],
-#        metadata=body.get('metadata'),
-
-
-
+    template = render("chalicelib/templates/all_finished.html", context)
+    return Response(template, status_code=200, headers={
+        "Content-Type": "text/html",
+        "Access-Control-Allow-Origin": "*"
+    })

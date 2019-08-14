@@ -21,3 +21,13 @@ Logs into Strava with api token, obtains a bearer token, then obtains basic user
 
 Includes all_finished function that does the work above and also adds user details to the athletes database
 
+### Run easy-web locally to test
+- Checkout the code
+- export your AWS Profile:
+```export AWS_PROFILE=work_account```
+- Verify you have a dynamoDB set up on your account
+- Verify the new database details are in your .chalice/config.json file
+- Run the application locally to test
+```chalice local```
+
+

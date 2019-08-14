@@ -1,6 +1,7 @@
 import os
 import jinja2
 import requests
+import boto3
 from datetime import datetime
 from chalice import Chalice, Response
 from chalicelib import db
@@ -15,10 +16,19 @@ client_id = 31940
 athlete_url_base = 'https://www.strava.com/api/v3/athlete'
 strava_auth_url = 'https://www.strava.com/oauth/token'
 
-def get_athlete_db():
+def get_inmemory_athlete_db():
     global _DB
     if _DB is None:
         _DB = db.InMemoryAthleteDB()
+    return _DB
+
+def get_athlete_db():
+    global _DB
+    if _DB is None:
+        _DB = db.DynamoDBAthletes(
+            boto3.resource('dynamodb').Table(
+                os.environ['APP_TABLE_NAME'])
+        )
     return _DB
 
 def render(tpl_path, context):
@@ -145,7 +155,7 @@ def all_finished():
     print(new_user)
 
     get_athlete_db().add_athlete(
-        athlete=values['id'],
+        athlete=str(values['id']),
         strava_token=strava_token,
         activity_bearer=activity_bearer['access_token'],
         steemit_user=steem_name,

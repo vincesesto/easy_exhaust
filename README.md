@@ -25,6 +25,8 @@ Includes all_finished function that does the work above and also adds user detai
 - Checkout the code
 - export your AWS Profile:
 ```export AWS_PROFILE=work_account```
+- Run the dynamoDB creation script
+```python createtable.py --table-type app```
 - Verify you have a dynamoDB set up on your account
 - Verify the new database details are in your .chalice/config.json file
 - Run the application locally to test

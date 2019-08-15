@@ -15,6 +15,7 @@ api_token = '6769ae72996e05a36ac38d546871dd63982b2651'
 client_id = 31940
 athlete_url_base = 'https://www.strava.com/api/v3/athlete'
 strava_auth_url = 'https://www.strava.com/oauth/token'
+APP_API_URL = 'https://n9oya74pbg.execute-api.ap-southeast-2.amazonaws.com/api/'
 
 def get_inmemory_athlete_db():
     global _DB
@@ -106,7 +107,7 @@ def sign_up():
 @app.route('/strava_auth')
 def strava_auth():           
     # Redirect to strava auth 
-    strava_auth_url="http://www.strava.com/oauth/authorize?client_id=31940&response_type=code&redirect_uri=http://127.0.0.1:8000/exchange_token&approval_prompt=force&scope=profile:write,activity:write,activity:read_all"
+    strava_auth_url="http://www.strava.com/oauth/authorize?client_id=31940&response_type=code&redirect_uri={}exchange_token&approval_prompt=force&scope=profile:write,activity:write,activity:read_all".format(APP_API_URL)
 
     # Now return a response and redirect to new page
     context = {'strava_auth_url': strava_auth_url}
@@ -122,7 +123,7 @@ def exchange():
     # return dictionary of results
     resp = app.current_request.to_dict()
     token=resp['query_params']['code']
-    easy_auth_url="http://127.0.0.1:8000/signup?code={}".format(token)
+    easy_auth_url="{}signup?code={}".format(APP_API_URL, token)
 
     context = {'strava_auth_url': easy_auth_url}
 

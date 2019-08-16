@@ -11,11 +11,11 @@ app = Chalice(app_name='easy-web')
 app.debug = True
 _DB = None
 DEFAULT_USERNAME = 'default'
-api_token = '6769ae72996e05a36ac38d546871dd63982b2651'
-client_id = 31940
-athlete_url_base = 'https://www.strava.com/api/v3/athlete'
-strava_auth_url = 'https://www.strava.com/oauth/token'
-APP_API_URL = 'https://n9oya74pbg.execute-api.ap-southeast-2.amazonaws.com/api/'
+api_token = os.environ['API_TOKEN']
+client_id = os.environ['CLIENT_ID']
+athlete_url_base = os.environ['ATHLETE_URL_BASE']
+strava_auth_url = os.environ['STRAVA_AUTH_URL']
+APP_API_URL = os.environ['APP_API_URL']
 
 def get_inmemory_athlete_db():
     global _DB
@@ -41,7 +41,7 @@ def update_activity_bearer(user_key):
     # Update this in the database
     try:
        response = requests.post(strava_auth_url,
-                            params={'client_id': client_id, 'client_secret': api_token, 'code': user_key,
+                            params={'client_id': int(client_id), 'client_secret': api_token, 'code': user_key,
                             'grant_type': 'authorization_code'})
        access_info = dict()
        activity_data = response.json()
@@ -107,7 +107,7 @@ def sign_up():
 @app.route('/strava_auth')
 def strava_auth():           
     # Redirect to strava auth 
-    strava_auth_url="http://www.strava.com/oauth/authorize?client_id=31940&response_type=code&redirect_uri={}exchange_token&approval_prompt=force&scope=profile:write,activity:write,activity:read_all".format(APP_API_URL)
+    strava_auth_url="http://www.strava.com/oauth/authorize?client_id={}&response_type=code&redirect_uri={}exchange_token&approval_prompt=force&scope=profile:write,activity:write,activity:read_all".format(client_id, APP_API_URL)
 
     # Now return a response and redirect to new page
     context = {'strava_auth_url': strava_auth_url}

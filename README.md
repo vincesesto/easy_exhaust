@@ -54,6 +54,10 @@ Includes all_finished function that does the work above and also adds user detai
 - Run the application locally to test
 ```chalice local```
 
-## easy_api
-## API that collects data and posts to Exhaust
+## easy_act
+## API that collects data from strava and posts to the activities database
+
+
+## easy_post
+## API running periodically to post activities to Exhaust
 

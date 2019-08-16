@@ -1,5 +1,7 @@
 # easy_exhaust
 
+Application running on Chalice Python framework, deploying to AWS
+
 ## easy_web
 ## Web interface that allows users to get Strava Auth, Sign Up and provide extra details
 

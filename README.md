@@ -54,4 +54,6 @@ Includes all_finished function that does the work above and also adds user detai
 - Run the application locally to test
 ```chalice local```
 
+## easy_api
+## API that collects data and posts to Exhaust
 

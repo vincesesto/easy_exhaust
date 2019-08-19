@@ -3,7 +3,15 @@
   "app_name": "easy-web",
   "stages": {
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "api",
+      "environment_variables": {
+        "APP_TABLE_NAME": "easy-web-a9b90393-e04c-48f4-9f4e-d903998e610e",
+        "APP_API_URL": "https://tm1fdkmb7a.execute-api.ap-southeast-2.amazonaws.com/api/",
+        "API_TOKEN": "6769ae72996e05a36ac38d546871dd63982b2651",
+        "CLIENT_ID": "31940",
+        "ATHLETE_URL_BASE": "https://www.strava.com/api/v3/athlete",
+        "STRAVA_AUTH_URL": "https://www.strava.com/oauth/token"
+      }
     }
   }
 }

@@ -3,7 +3,11 @@
   "app_name": "easy-act",
   "stages": {
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "api",
+      "environment_variables": {
+        "ACT_TABLE_NAME": "easy-act-8c1ec095-91b0-471f-a7de-ad41b120e0ba",
+        "APP_TABLE_NAME": "easy-web-a9b90393-e04c-48f4-9f4e-d903998e610e"
+      }
     }
   }
 }

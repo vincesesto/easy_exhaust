@@ -27,6 +27,8 @@ Includes all_finished function that does the work above and also adds user detai
 - Checkout the code
 - export your AWS Profile:
 ```export AWS_PROFILE=work_account```
+- Change into the easy-web directory and set up requirements
+```cd easy_exhaust/easy-act; pip install -r requirements.txt```
 - Run the dynamoDB creation script
 ```python createtable.py --table-type app```
 - Verify you have a dynamoDB set up on your account
@@ -53,6 +55,9 @@ Includes all_finished function that does the work above and also adds user detai
 ```
 - Run the application locally to test
 ```chalice local```
+- Access the url provided
+```http://127.0.0.1:8000/```
+
 
 ## easy_act
 ## API that collects data from strava and posts to the activities database
@@ -61,3 +66,12 @@ Includes all_finished function that does the work above and also adds user detai
 ## easy_post
 ## API running periodically to post activities to Exhaust
 
+
+
+
+
+
+
+```curl -H "Content-Type: application/json" -d '{"strava_id": "1746389", "strava_token": "f53de2ed2a5d40b3814f4927c315b8", "activity_bearer": "ccb18fbdd3e85f8f280eeb6dd24192897", "steemit_user": "test.vince.test", "steemit_token": "", "metadata": {}}' -X POST http://127.0.0.1:8000/athletes ```
+
+```curl http://127.0.0.1:8000/athletes | jq```

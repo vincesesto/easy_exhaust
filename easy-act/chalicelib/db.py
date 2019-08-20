@@ -68,6 +68,81 @@ class InMemoryActivityDB(object):
         if metadata is not None:
             item['metadata'] = metadata
 
+class DynamoDBActivityDB(object):
+    def __init__(self, table_resource):
+        self._table = table_resource
+
+    def list_all_activities(self):
+        response = self._table.scan()
+        return response['Items']
+
+    def list_activities(self, username=DEFAULT_USERNAME):
+        response = self._table.query(
+            KeyConditionExpression=Key('username').eq(username)
+        )
+        return response['Items']
+
+    def add_activity(self, activity_id, strava_user, activity_date, type, title, duration, distance=None,
+                     description=None, photo=None, exhaust_up=None, metadata=None, username=DEFAULT_USERNAME):
+        self._table.put_item(
+            Item={
+            'activity_id': activity_id,
+            'strava_user': strava_user,
+            'activity_date': activity_date,
+            'type': type,
+            'title': title,
+            'duration': duration,
+            'distance': distance if distance is not None else "",
+            'description': description if description is not None else "",
+            'photo': photo if photo is not None else "",
+            'exhaust_up': exhaust_up if exhaust_up is not None else "No",
+            'metadata': metadata if metadata is not None else {},
+            'username': username
+        }
+        return activity_id
+
+    def get_activity(self, activity_id, username=DEFAULT_USERNAME):
+        response = self._table.get_item(
+            Key={
+                'username': username,
+                'activity_id': activity_id,
+            },
+        )
+        return response['Item']
+
+    def delete_activity(self, activity_id, username=DEFAULT_USERNAME):
+        self._table.delete_item(
+            Key={
+                'username': username,
+                'activity_id': activity_id,
+            }
+        )
+
+    def update_activity(self, activity_id, strava_user=None, activity_date=None, type=None, title=None, duration=None, distance=None,
+                     description=None, photo=None, exhaust_up=None, metadata=None, username=DEFAULT_USERNAME):
+        item = self.get_item(activity_id, username)
+        if strava_user is not None:
+            item['strava_user'] = strava_user
+        if activity_date is not None:
+            item['activity_date'] = activity_date
+        if type is not None:
+            item['type'] = type
+        if title is not None:
+            item['title'] = title
+        if duration is not None:
+            item['duration'] = duration
+        if distance is not None:
+            item['distance'] = distance
+        if description is not None:
+            item['description'] = description
+        if photo is not None:
+            item['photo'] = photo
+        if exhaust_up is not None:
+            item['exhaust_up'] = exhaust_up
+        if metadata is not None:
+            item['metadata'] = metadata
+        self._table.put_item(Item=item)
+
 class InMemoryAthleteDB(object):
     def __init__(self, state=None):
         if state is None:

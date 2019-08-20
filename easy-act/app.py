@@ -13,16 +13,32 @@ _DB = None
 _ATHLETEDB = None
 _ACTIVITYDB = None
 DEFAULT_USERNAME = 'default'
+client_secret = os.environ['API_TOKEN']
+client_id = os.environ['CLIENT_ID']
+strava_auth_url = os.environ['STRAVA_AUTH_URL']
+easy_act_api = os.environ['APP_API_URL']
+
+def exchange_code_for_token(client_id, client_secret, code):
+    # Update their latest_bearer for the user so you can check more activity
+    try:
+       response = requests.post(strava_auth_url,
+                            params={'client_id': int(client_id), 'client_secret': client_secret, 'code': code,
+                            'grant_type': 'authorization_code'})
+       access_info = dict()
+       activity_data = response.json()
+       access_info['access_token'] = activity_data['access_token']
+       return access_info
+    except:
+        print("Log - An Error occurred trying to authenticate with the {} Strava token".format(code))
+        return False
 
 def list_all_athlete_ids():
     # Go through the database and get all the athlete ids ready to search for activities
-    response = requests.get('http://127.0.0.1:8000/athletes')
+    athlete_url = easy_act_api + "athletes"
+    response = requests.get(athlete_url)
     token_list = []
     for i in response.json():
-        entry = {}
-        entry["strava_token"] = i['strava_token']
-        entry["activity_bearer"] = i['activity_bearer']
-        token_list.append(entry)
+        token_list.append(i)
     return token_list
 
 def list_all_activity_ids():
@@ -172,11 +188,13 @@ def update_activity(activity_id):
 @app.route('/loop', methods=['GET'])
 def loop_athletes_db():
     # loop through the athletes db and get the activity_bearer of each
-    #client_id = 31940
-    #client_secret = "6769ae72996e05a36ac38d546871dd63982b2651"
     token_list = list_all_athlete_ids()
     for i in token_list:
-        activity_data = check_for_activities(i['activity_bearer'])
+        exchange_data = {}
+        exchange_data = exchange_code_for_token(client_id, client_secret, i['strava_token'])
+        if not exchange_data:
+            continue
+        activity_data = check_for_activities(exchange_data['access_token'])
 
         # Only want Runs Bikes Swims Yoga
         desired_activities = ("Run", "Ride", "Swim", "Yoga")
@@ -184,7 +202,7 @@ def loop_athletes_db():
                 break
         # only add the new activity if it does not exist
         if not does_activity_exist(activity_data[-1]['id']):
-            additional_data = check_additional_data(activity_data[-1]['id'],i['activity_bearer'])
+            additional_data = check_additional_data(activity_data[-1]['id'],exchange_data['access_token'])
 
             # Only Run, Bike or Hikes can be uploaded if they have a valid GPX file
             print(str(activity_data[-1]['external_id']))

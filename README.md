@@ -66,12 +66,21 @@ Includes all_finished function that does the work above and also adds user detai
 ## easy_post
 ## API running periodically to post activities to Exhaust
 
+### loop_athletes_db
+This is the main function that is run by calling the URL: ```curl http://127.0.0.1:8000/loop | jq```
 
+It is currently set up to only run when required but will look at setting this to occur every 2 hours or so.
 
-
-
-
-
-```curl -H "Content-Type: application/json" -d '{"strava_id": "1746389", "strava_token": "f53de2ed2a5d40b3814f4927c315b8", "activity_bearer": "ccb18fbdd3e85f8f280eeb6dd24192897", "steemit_user": "test.vince.test", "steemit_token": "", "metadata": {}}' -X POST http://127.0.0.1:8000/athletes ```
-
+### Run easy-act locally to test
+- Perform the same as easy-web, including running ```chalice local```
+- See if there are any athletes in the database:
 ```curl http://127.0.0.1:8000/athletes | jq```
+- You can add a test user with a similar POST command:
+```curl -H "Content-Type: application/json" -d '{"strava_id": "1746389", "strava_token": "f53de2ed2a5d40b3814f4927c315b8", "activity_bearer": "ccb18fbdd3e85f8f280eeb6dd24192897", "steemit_user": "test.vince.test", "steemit_token": "", "metadata": {}}' -X POST http://127.0.0.1:8000/athletes ```
+- Check to see if your athlete is added
+```curl http://127.0.0.1:8000/athletes | jq```
+- You can then loop and see if the user has any activities with the following:
+```curl http://127.0.0.1:8000/loop | jq```
+
+
+

@@ -62,10 +62,6 @@ Includes all_finished function that does the work above and also adds user detai
 ## easy_act
 ## API that collects data from strava and posts to the activities database
 
-
-## easy_post
-## API running periodically to post activities to Exhaust
-
 ### loop_athletes_db
 This is the main function that is run by calling the URL: ```curl http://127.0.0.1:8000/loop | jq```
 
@@ -83,4 +79,5 @@ It is currently set up to only run when required but will look at setting this t
 ```curl http://127.0.0.1:8000/loop | jq```
 
 
-
+## easy_post
+## API running periodically to post activities to Exhaust

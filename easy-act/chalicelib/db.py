@@ -98,15 +98,16 @@ class DynamoDBActivityDB(object):
             'exhaust_up': exhaust_up if exhaust_up is not None else "No",
             'metadata': metadata if metadata is not None else {},
             'username': username
-        }
+            }
+        )
         return activity_id
 
     def get_activity(self, activity_id, username=DEFAULT_USERNAME):
         response = self._table.get_item(
             Key={
                 'username': username,
-                'activity_id': activity_id,
-            },
+                'activity_id': activity_id
+            }
         )
         return response['Item']
 

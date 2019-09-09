@@ -77,7 +77,8 @@ It is currently set up to only run when required but will look at setting this t
 ```curl http://127.0.0.1:8000/athletes | jq```
 - You can then loop and see if the user has any activities with the following:
 ```curl http://127.0.0.1:8000/loop | jq```
-
+- You can check to see if there are any activities in the database with the following:
+```curl http://127.0.0.1:8000/activities | jq```
 
 ## easy_post
 ## API running periodically to post activities to Exhaust

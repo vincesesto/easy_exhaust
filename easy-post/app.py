@@ -2,6 +2,7 @@ import requests
 import json
 import boto3
 import os
+from beem import Steem
 from chalice import Chalice
 from chalicelib import db
 from datetime import datetime, timedelta
@@ -20,11 +21,17 @@ strava_auth_url = os.environ['STRAVA_AUTH_URL']
 easy_act_api = os.environ['APP_API_URL']
 exhaust_token = os.environ['EXHAUST_TOKEN']
 s3_bucket = os.environ['S3_BUCKET_NAME']
+posting_keys = os.environ['POSTING_KEY']
+
+steem = Steem(
+    keys=[posting_keys,]
+)
 
 
 def download_description(activity_id):
+    print(activity_id)
     s3 = boto3.resource('s3')
-    obj = s3.Object(s3_bucket, activity_id)
+    obj = s3.Object(s3_bucket, str(activity_id))
     body = obj.get()['Body'].read()
     return body.decode("utf-8")
 
@@ -106,34 +113,31 @@ def update_activity(activity_id):
 
 # Get activities from the activities database
 # Wrap it all together and post it to exhaust
-@app.route('/post_to_exhaust', methods=['GET'])
+@app.route('/post_to_steemit', methods=['GET'])
 def loop_activities_db():
     posting_list = list_all_activity_ids()
     for i in posting_list:
-        # Not much to do for now but hoping this will be expanded
+        if str(i['title']) != "Weekly Report":
+            print("Not a weekly report, next")
+            continue
 
-        exhaust_post = {}
-        int_distance = float(i['distance'])
-        exhaust_post['distance'] = int(int_distance)
-        exhaust_post['duration'] = int(i['duration'])
+        print("Testing Vince")
+        post_title = "@{} {}".format(i['activity_id'], i['title'])
+        post_author = i['activity_id']
+        post_permlink = "weekly_report_{}".format(datetime.now().strftime('%s'))
+        post_app = "myapp/0.0.1"
+        post_tags = "exhaust running fitnation runningproject sportstalk"
+        post_body = download_description(int(i['strava_user']))
 
-        types = {"Run": 1, "Ride": 2, "Hike": 3, "Climb": 4, "Yoga": 5, "Strength": 6 }
-        exhaust_post['type'] = types[i['type']]
-        post_title = str(i['title'])
+        print("Testing Vince")
 
-        exhaust_post['title'] = post_title
+        parse_body = True
+        self_vote = True
 
-        exhaust_post['comment'] = download_description(i['activity_id'])
-
-        print(exhaust_post)
+        steem.post(post_title, post_body, author=post_author, tags=post_tags, parse_body=parse_body, self_vote=self_vote)
 
         break
 
-        json_data = json.dumps(exhaust_post)
-
-        url = 'https://xhaust.me/api/v1/activities/'
-
-        print(url)
         headers = '{"Authorization": "Token ' + str(exhaust_token) + '"}'
         headers = {'Authorization': 'Token f0fe1e22a00295f4dbca86557166e43e9e4e7cc1'}
         print(headers)
